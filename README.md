@@ -111,10 +111,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - [Together.ai](https://www.together.ai) for providing the AI model
 - [Streamlit](https://streamlit.io) for the web framework
-- [Stable Diffusion](https://stability.ai) for the image generation model
-
-## 📧 Contact
-
-Your Name - [@yourtwitter](https://twitter.com/yourtwitter)
-
-Project Link: [https://github.com/yourusername/ImageGeneratorTogatherAI](https://github.com/yourusername/ImageGeneratorTogatherAI) 
