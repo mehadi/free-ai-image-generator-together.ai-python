@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Generated Images
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.webp
+generated_images/
+output/
+outputs/
+
+# Logs
+*.log
+api.log
+logs/
+api_logs/
+
+# Environment Variables and Secrets
+.env
+.env.*
+*.env
+.env.local
+.env.development
+.env.test
+.env.production
+api_keys.json
+secrets.json
+credentials.json
+
+# Local development settings
+.env
+.env.local
+api_logs_20250524.log
