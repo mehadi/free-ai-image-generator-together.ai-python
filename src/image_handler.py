@@ -1,16 +1,36 @@
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from PIL import Image
 
 class ImageHandler:
     def __init__(self, save_dir="generated_images"):
         self.save_dir = save_dir
         self._ensure_save_directory()
+        self.cleanup_old_images()
 
     def _ensure_save_directory(self):
         """Create the save directory if it doesn't exist"""
         if not os.path.exists(self.save_dir):
             os.makedirs(self.save_dir)
+
+    def cleanup_old_images(self):
+        """Delete images older than 1 hour"""
+        if not os.path.exists(self.save_dir):
+            return
+
+        current_time = datetime.now()
+        one_hour_ago = current_time - timedelta(hours=1)
+
+        for filename in os.listdir(self.save_dir):
+            if filename.endswith(('.png', '.jpg', '.jpeg')):
+                filepath = os.path.join(self.save_dir, filename)
+                file_time = datetime.fromtimestamp(os.path.getctime(filepath))
+                
+                if file_time < one_hour_ago:
+                    try:
+                        os.remove(filepath)
+                    except Exception as e:
+                        print(f"Error deleting old image {filename}: {str(e)}")
 
     def save_image(self, image: Image.Image, prompt: str) -> str:
         """

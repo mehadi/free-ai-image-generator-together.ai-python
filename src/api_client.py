@@ -6,7 +6,8 @@ import io
 import base64
 import logging
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
+from collections import deque
 
 # Configure logging
 logging.basicConfig(
@@ -29,7 +30,24 @@ class TogetherAIClient:
             logger.error("TOGETHER_API_KEY not found in environment variables")
             raise ValueError("TOGETHER_API_KEY not found in environment variables")
         self.api_url = "https://api.together.xyz/v1/images/generations"
+        self.rate_limit = 6  # Maximum requests per minute
+        self.request_times = deque(maxlen=self.rate_limit)  # Store timestamps of recent requests
         logger.info("TogetherAIClient initialized successfully")
+
+    def _check_rate_limit(self):
+        """Check if we've exceeded the rate limit"""
+        current_time = datetime.now()
+        one_minute_ago = current_time - timedelta(minutes=1)
+        
+        # Remove timestamps older than 1 minute
+        while self.request_times and self.request_times[0] < one_minute_ago:
+            self.request_times.popleft()
+        
+        if len(self.request_times) >= self.rate_limit:
+            oldest_request = self.request_times[0]
+            wait_time = (oldest_request + timedelta(minutes=1) - current_time).total_seconds()
+            if wait_time > 0:
+                raise Exception(f"Rate limit exceeded. Please wait {int(wait_time)} seconds before trying again.")
 
     def generate_image(self, prompt, model="black-forest-labs/FLUX.1-schnell-Free", width=576, height=1024, steps=4, seed=42, negative_prompt=None):
         """
@@ -48,6 +66,9 @@ class TogetherAIClient:
             PIL.Image: The generated image
         """
         try:
+            # Check rate limit before making the request
+            self._check_rate_limit()
+            
             logger.info(f"Generating image with model: {model}")
             logger.info(f"Prompt: {prompt}")
             logger.info(f"Parameters: width={width}, height={height}, steps={steps}, seed={seed}")
@@ -76,6 +97,9 @@ class TogetherAIClient:
             # Make the API request
             logger.info("Making API request to Together.ai")
             response = requests.post(self.api_url, headers=headers, json=data)
+            
+            # Add current request timestamp to the queue
+            self.request_times.append(datetime.now())
             
             # Handle specific HTTP errors
             if response.status_code == 401:
